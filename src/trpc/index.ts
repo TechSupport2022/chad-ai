@@ -20,7 +20,7 @@ export const appRouter = router({
       const { getUser } = getKindeServerSession()
       const user = await getUser();
 
-      if (!user.id || user.email) {
+      if (!user.id || !user.email) {
          console.log("Please enter a valide credentials");
          throw new TRPCError({ code: "UNAUTHORIZED" })
       }
