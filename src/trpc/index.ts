@@ -71,7 +71,7 @@ export const appRouter = router({
 
    deleteFile: privateProcedure.input(
       z.object({ id: z.string() })
-   ).mutation(async ({ctx, input}) => {
+   ).mutation(async ({ ctx, input }) => {
       const { userId } = ctx
 
       const file = await db.file.findFirst({
@@ -81,7 +81,7 @@ export const appRouter = router({
          }
       })
 
-      if(!file) throw new TRPCError({ code: "NOT_FOUND"})
+      if (!file) throw new TRPCError({ code: "NOT_FOUND" })
 
       await db.file.delete({
          where: {
@@ -89,6 +89,23 @@ export const appRouter = router({
             userId: userId
          }
       })
+
+      return file
+   }),
+
+   getFile: privateProcedure.input(z.object({
+      key: z.string(),
+   })).mutation(async ({ ctx, input }) => {
+      const { userId } = ctx
+
+      const file = await db.file.findFirst({
+         where: {
+            key: input.key,
+            userId: userId
+         }
+      })
+
+      if (!file) throw new TRPCError({ code: "NOT_FOUND" })
 
       return file
    })
