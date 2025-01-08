@@ -3,7 +3,7 @@ import React from 'react'
 const ChatWrapper = (props: any) => {
   return (
     <div>
-      CHAT WRWPPER FROM HERE TOO
+      Start Chatting with PDF Here
     </div>
   )
 }

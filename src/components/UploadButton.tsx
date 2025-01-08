@@ -71,7 +71,7 @@ const UploadDropzone = () => {
          if (Array.isArray(res) && res.length > 0) {
             const [fileResponse] = res; // Safely destructure here
 
-            key = fileResponse?.key;
+            key = fileResponse?.key;   
 
             if (!key) {
                toast({
