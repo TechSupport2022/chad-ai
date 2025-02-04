@@ -15,14 +15,14 @@ const page = async ({ params }: PageProps) => {
    const { fileid } = await params
    const { getUser } = getKindeServerSession()
 
-   const user = await getUser()
+   const authUser = await getUser()
 
-   if (!user || !user.id) redirect(`/auth-callback?origin=dashboard/${fileid}`)
+   if (!authUser || !authUser.id) redirect(`/auth-callback?origin=dashboard/${fileid}`)
 
    // make db call
    const file = await db.file.findFirst({
       where: {
-         userId: user.id,
+         userAuthId: authUser.id,
          id: fileid
       }
    })

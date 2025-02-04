@@ -3,6 +3,9 @@ import { privateProcedure, procedure, router } from './trpc';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { TRPCError } from '@trpc/server';
 import { db } from '@/db';
+import { ObjectId } from "mongodb"
+
+
 export const appRouter = router({
    //   hello: procedure
    //     .input(
@@ -18,9 +21,9 @@ export const appRouter = router({
 
    authCallback: procedure.query(async () => {
       const { getUser } = getKindeServerSession()
-      const user = await getUser();
+      const authUser = await getUser();
 
-      if (!user.id || !user.email) {
+      if (!authUser.id || !authUser.email) {
          console.log("Please enter a valide credentials");
          throw new TRPCError({ code: "UNAUTHORIZED" })
       }
@@ -28,7 +31,7 @@ export const appRouter = router({
       // check if the user is in the database
       const dbUser = await db.user.findFirst({
          where: {
-            id: user.id,
+            authId: authUser.id,
          }
       })
 
@@ -36,8 +39,8 @@ export const appRouter = router({
          // create user in db
          await db.user.create({
             data: {
-               id: user.id,
-               email: user.email
+               authId: authUser.id,
+               email: authUser.email
             }
          })
       }
@@ -45,11 +48,11 @@ export const appRouter = router({
    }),
 
    getUserFiles: privateProcedure.query(async ({ ctx }) => {
-      const { userId, user } = ctx
+      const { authUser, authUserId } = ctx
 
       const userFiles = await db.file.findMany({
          where: {
-            userId: userId
+            userAuthId: authUserId
          }
       })
 
@@ -64,7 +67,7 @@ export const appRouter = router({
 
       return await db.file.findMany({
          where: {
-            userId: user.id
+            userAuthId: user.id
          }
       })
    }),
@@ -72,12 +75,12 @@ export const appRouter = router({
    deleteFile: privateProcedure.input(
       z.object({ id: z.string() })
    ).mutation(async ({ ctx, input }) => {
-      const { userId } = ctx
+      const { authUserId } = ctx
 
       const file = await db.file.findFirst({
          where: {
             id: input.id,
-            userId: userId
+            userAuthId: authUserId
          }
       })
 
@@ -86,7 +89,7 @@ export const appRouter = router({
       await db.file.delete({
          where: {
             id: input.id,
-            userId: userId
+            userAuthId: authUserId
          }
       })
 
@@ -96,12 +99,12 @@ export const appRouter = router({
    getFile: privateProcedure.input(z.object({
       key: z.string(),
    })).mutation(async ({ ctx, input }) => {
-      const { userId } = ctx
+      const { authUserId } = ctx
 
       const file = await db.file.findFirst({
          where: {
             key: input.key,
-            userId: userId
+            userAuthId: authUserId
          }
       })
 
@@ -116,7 +119,7 @@ export const appRouter = router({
          const file = await db.file.findFirst({
             where: {
                id: input.fileId,
-               userId: ctx.userId,
+               userAuthId: ctx.authUserId,
             }
          })
 

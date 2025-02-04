@@ -11,16 +11,16 @@ const middleware = t.middleware;
 
 const isAuth = middleware(async (opts) => {
    const { getUser } = getKindeServerSession()
-   const user = await getUser();
+   const authUser = await getUser();
 
-   if (!user || !user.id) {
+   if (!authUser || !authUser.id) {
       throw new TRPCError({ code: "UNAUTHORIZED" })
    }
 
    return opts.next({
       ctx: {
-         userId: user.id,
-         user
+         authUserId: authUser.id,
+         authUser: authUser
       }
    })
 })

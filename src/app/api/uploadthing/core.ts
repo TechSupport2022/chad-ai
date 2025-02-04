@@ -3,6 +3,12 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { uploadStatus } from "@prisma/client";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
+import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
+import { pc } from "@/lib/pinecone";
+import { OpenAIEmbeddings } from "@langchain/openai";
+import { PineconeStore } from "@langchain/pinecone";
+
+
 
 const f = createUploadthing();
 
@@ -25,19 +31,19 @@ export const ourFileRouter = {
       .middleware(async ({ req }) => {
          // This code runs on your server before upload
          const { getUser } = getKindeServerSession();
-         const user = await getUser()
+         const authUser = await getUser()
 
-         console.log("user from uploadthing log:...", user);
+         console.log("user from uploadthing log:...", authUser);
 
-         // If you throw, the user will not be able to upload
-         if (!user || !user.id) throw new UploadThingError("Unauthorized");
+         // If you throw, the authUser will not be able to upload
+         if (!authUser || !authUser.id) throw new UploadThingError("Unauthorized");
 
          // Whatever is returned here is accessible in onUploadComplete as `metadata`
-         return { userId: user.id };
+         return { authUserId: authUser.id };
       })
       .onUploadComplete(async ({ metadata, file }) => {
          // This code RUNS ON YOUR SERVER after upload
-         console.log("Upload complete for userId:", metadata.userId);
+         console.log("Upload complete for userId:", metadata.authUserId);
 
          console.log("file url", file.url);
 
@@ -45,11 +51,55 @@ export const ourFileRouter = {
             data: {
                key: file.key,
                name: file.name,
-               userId: metadata.userId,
+               userAuthId: metadata.authUserId,
                url: `https://utfs.io/f/${file.key}`,
                uploadStatus: "PROCESSING"
             }
          })
+
+         try {
+            const response = await fetch(`https://utfs.io/f/${file.key}`)
+            const blob = await response.blob()
+
+            const loader = new PDFLoader(blob)
+
+            const pageLevelDocs = await loader.load()
+
+            const pagesAmt = pageLevelDocs.length;
+
+            // vectorize and index entire document
+            // @ts-ignore
+            const pineconeIndex = pc.Index(process.env.PINECONE_INDEX)
+
+            const embeddings = new OpenAIEmbeddings({
+               openAIApiKey: process.env.OPEN_AI_API_KEY,
+            })
+
+            await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
+               pineconeIndex,
+               namespace: createdFile.id,
+               maxConcurrency: 5
+            })
+
+            await db.file.update({
+               data: {
+                  uploadStatus: "SUCCESS"
+               },
+               where: {
+                  id: createdFile.id
+               }
+            })
+         } catch (err) {
+            console.error(err)
+            await db.file.update({
+               data: {
+                  uploadStatus: "FAILED"
+               },
+               where: {
+                  id: createdFile.id
+               }
+            })
+         }
 
          // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
          // return { uploadedBy: metadata.userId };

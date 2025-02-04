@@ -7,18 +7,19 @@ import Dashboard from '@/components/Dashboard'
 
 const Page = async () => {
    const { getUser } = getKindeServerSession()
-   const user = await getUser()
+   const authUser = await getUser()
+   console.log("this is the user: ", authUser)
    // console.log(user)
 
-   if(!user || !user.id) redirect('/auth-callback?origin=dashboard')
+   if (!authUser || !authUser.id) redirect('/auth-callback?origin=dashboard')
 
    const dbUser = await db.user.findFirst({
       where: {
-         id: user.id,
+         authId: authUser.id,
       }
    })
 
-   if(!dbUser) redirect('/auth-callback?origin=dashboard')
+   if (!dbUser) redirect('/auth-callback?origin=dashboard')
 
    return (
       <Dashboard />
