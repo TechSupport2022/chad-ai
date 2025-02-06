@@ -7,6 +7,8 @@ import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { pc } from "@/lib/pinecone";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { PineconeStore } from "@langchain/pinecone";
+// import { TransformersEmbeddings } from 'langchain/embeddings/hf';
+import { HuggingFaceInferenceEmbeddings } from '@langchain/community/embeddings/hf';
 
 
 
@@ -71,9 +73,15 @@ export const ourFileRouter = {
             // @ts-ignore
             const pineconeIndex = pc.Index(process.env.PINECONE_INDEX)
 
-            const embeddings = new OpenAIEmbeddings({
-               openAIApiKey: process.env.OPEN_AI_API_KEY,
-            })
+            // const embeddings = new OpenAIEmbeddings({
+            //    // openAIApiKey: process.env.OPEN_AI_API_KEY,
+            // })
+
+            // Initialize Transformer embeddings instead of OpenAI
+            const embeddings = new HuggingFaceInferenceEmbeddings({
+               apiKey: process.env.HUGGINGFACE_API_KEY, // You'll need this
+               model: "sentence-transformers/all-mpnet-base-v2"
+            });
 
             await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
                pineconeIndex,

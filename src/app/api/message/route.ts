@@ -11,16 +11,16 @@ export const POST = async (req: NextRequest) => {
    const { getUser } = getKindeServerSession()
    const user = await getUser()
 
-   const { id: userId } = user;
+   const { id: authUserId } = user;
 
-   if (!userId) return new Response('UNAUTHORIZED', { status: 401 })
+   if (!authUserId) return new Response('UNAUTHORIZED', { status: 401 })
 
    const { fileId, message } = SendMessageValidator.parse(body)
 
    const file = await db.file.findFirst({
       where: {
          id: fileId,
-         userId
+         userAuthId: authUserId
       }
    })
 
@@ -30,7 +30,7 @@ export const POST = async (req: NextRequest) => {
       data: {
          text: message,
          isUserMessage: true,
-         userId,
+         userAuthId: authUserId,
          fileId,
       },
    })
