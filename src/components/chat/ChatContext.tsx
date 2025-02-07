@@ -58,7 +58,7 @@ export const ChatContextProvider = ({ fileId, children }: Props) => {
          message,
          isLoading
       }}>
-
+         {children}
       </ChatContext.Provider>
    )
 }
