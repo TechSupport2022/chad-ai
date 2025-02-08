@@ -99,7 +99,7 @@ const ChatWrapper = ({ fileId, isSubscribed }: ChatWrapperProps) => {
       <ChatContextProvider fileId={fileId}>
          <div className='relative min-h-full bg-zinc-50 flex divide-y flex-col divide-zinc-200 justify-between gap-2'>
             <div className='flex-1 justify-between flex flex-col mb-28'>
-               <Messages />
+               <Messages fileId={fileId}/>
             </div>
 
             <ChatInput isDisabled={isLoading} />

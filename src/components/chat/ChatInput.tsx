@@ -24,6 +24,10 @@ const ChatInput = ({ isDisabled }: ChatInputProps) => {
                         autoFocus
                         rows={1}
                         onChange={handleInputChange}
+                        maxRows={4}
+                        placeholder='Enter your question....'
+                        className='resize-none pr-12 text-base py-3 scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch'
+                        value={message}
                         onKeyDown={(e) => {
                            if (e.key === 'Enter' && !e.shiftKey) {
                               e.preventDefault()
@@ -33,12 +37,9 @@ const ChatInput = ({ isDisabled }: ChatInputProps) => {
                               textareaRef.current?.focus()
                            }
                         }}
-                        maxRows={4}
-                        placeholder='Enter your question....'
-                        className='resize-none pr-12 text-base py-3 scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch'
                      />
                      <Button
-                        // disabled={isLoading || isDisabled}
+                        disabled={isLoading || isDisabled}
                         aria-label='send message'
                         type='submit'
                         onClick={() => {

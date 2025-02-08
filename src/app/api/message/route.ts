@@ -6,6 +6,7 @@ import { HuggingFaceInferenceEmbeddings } from "@langchain/community/embeddings/
 import { PineconeStore } from "@langchain/pinecone";
 import { NextRequest } from "next/server";
 import { HfInference } from "@huggingface/inference";
+import { generatePrompts } from "@/lib/constants";
 
 const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
@@ -107,25 +108,27 @@ export const POST = async (req: NextRequest) => {
    //    })
    // });
 
-    // CALL LLaMA API USING HUGGING FACE SDK
-    const response = await hf.textGeneration({
+   // CALL LLaMA API USING HUGGING FACE SDK
+   const response = await hf.textGeneration({
       model: "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
-      inputs: `
-      Use the following context to answer the user's question in markdown format.
-      If you don't know, just say so.
 
-      ----------------
+      inputs: generatePrompts(formattedPrevMessages, results, message),
 
-      PREVIOUS CONVERSATION:
-      ${formattedPrevMessages.map(msg => `${msg.role}: ${msg.content}`).join("\n")}
+      // Use the following context to answer the user's question in markdown format.
+      // If you don't know, just say so.
 
-      ----------------
+      // ----------------
 
-      CONTEXT:
-      ${results.map(r => r.pageContent).join("\n\n")}
+      // PREVIOUS CONVERSATION:
+      // ${formattedPrevMessages.map(msg => `${msg.role}: ${msg.content}`).join("\n")}
 
-      USER INPUT: ${message}
-      `,
+      // ----------------
+
+      // CONTEXT:
+      // ${results.map(r => r.pageContent).join("\n\n")}
+
+      // USER INPUT: ${message}
+      // `,
       parameters: {
          max_new_tokens: 150,
          temperature: 0.7,
@@ -133,7 +136,26 @@ export const POST = async (req: NextRequest) => {
       }
    });
 
-   let logThis =  new Response(JSON.stringify(response), { status: 200 });
-   console.log(logThis);
+   // Extract only the final answer from the generated text.
+   const generatedText: string = response.generated_text;
+   const parts = generatedText.split('</think>');
+   const answer = parts.length > 1 ? parts[1].trim() : generatedText.trim();
+
+   // Optionally log the answer.
+   console.log("Final Answer from ai be like:  ", answer);
+
+   // Store only the answer in the database, instead of the whole response.
+   await db.message.create({
+      data: {
+         text: answer,
+         isUserMessage: false,
+         userAuthId: authUserId,
+         fileId,
+      },
+   });
+
+   let logThis = new Response(JSON.stringify(response), { status: 200 });
+   // let logThis =  new Response(response.body, { status: 200 });
+   // console.log(logThis.json().then(response => console.log(response)))
    return logThis
 };
