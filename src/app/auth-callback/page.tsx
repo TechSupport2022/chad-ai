@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { trpc } from '../_trpc/client'
 import { Loader2 } from 'lucide-react'
 
-const page = () => {
+const Page = () => {
    const router = useRouter()
 
    const searchParams = useSearchParams()
@@ -16,7 +16,7 @@ const page = () => {
 
 
    // Call the TRPC query with retry options
-   const { data, isLoading, status, error } = trpc.authCallback.useQuery(undefined, {
+   const { data, error } = trpc.authCallback.useQuery(undefined, {
       retry: true,
       retryDelay: 500,
    });
@@ -51,4 +51,4 @@ const page = () => {
 
 }
 
-export default page
+export default Page

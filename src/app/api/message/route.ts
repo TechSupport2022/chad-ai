@@ -48,8 +48,8 @@ export const POST = async (req: NextRequest) => {
       model: "sentence-transformers/all-mpnet-base-v2"
    });
 
-   // @ts-ignore
-   const pineconeIndex = pc.Index(process.env.PINECONE_INDEX)
+   
+   const pineconeIndex = pc.Index(process.env.PINECONE_INDEX!)
 
    const vectorstore = await PineconeStore.fromExistingIndex(embeddings, {
       pineconeIndex,
@@ -154,8 +154,8 @@ export const POST = async (req: NextRequest) => {
       },
    });
 
-   let logThis = new Response(JSON.stringify(response), { status: 200 });
+   return new Response(JSON.stringify(response), { status: 200 });
    // let logThis =  new Response(response.body, { status: 200 });
    // console.log(logThis.json().then(response => console.log(response)))
-   return logThis
+   // return response
 };

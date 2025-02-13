@@ -108,7 +108,7 @@ const Dashboard = () => {
                <div className='mt-16 flex flex-col items-center gap-2'>
                   <Ghost className='h-8 w-8 text-zinc-800' />
                   <h3 className='font-semibold text-xl'>Pretty empty around here</h3>
-                  <p className='font-semibold text-xl'>Let's upload your first PDF.</p>
+                  <p className='font-semibold text-xl'>Let&apos;s upload your first PDF.</p>
                </div>
             )}
 

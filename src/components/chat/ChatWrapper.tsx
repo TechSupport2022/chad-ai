@@ -14,7 +14,7 @@ interface ChatWrapperProps {
    isSubscribed: boolean;
 }
 
-const ChatWrapper = ({ fileId, isSubscribed }: ChatWrapperProps) => {
+const ChatWrapper = ({ fileId }: ChatWrapperProps) => {
 
    const { data, isLoading } = trpc.getFileUploadtStatus.useQuery({ fileId }, {
       retry: true,

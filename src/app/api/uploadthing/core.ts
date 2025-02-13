@@ -1,11 +1,9 @@
 import { db } from "@/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { uploadStatus } from "@prisma/client";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { pc } from "@/lib/pinecone";
-import { OpenAIEmbeddings } from "@langchain/openai";
 import { PineconeStore } from "@langchain/pinecone";
 // import { TransformersEmbeddings } from 'langchain/embeddings/hf';
 import { HuggingFaceInferenceEmbeddings } from '@langchain/community/embeddings/hf';
@@ -13,8 +11,6 @@ import { HuggingFaceInferenceEmbeddings } from '@langchain/community/embeddings/
 
 
 const f = createUploadthing();
-
-const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
@@ -30,7 +26,7 @@ export const ourFileRouter = {
       },
    })
       // Set permissions and file types for this FileRoute
-      .middleware(async ({ req }) => {
+      .middleware(async () => {
          // This code runs on your server before upload
          const { getUser } = getKindeServerSession();
          const authUser = await getUser()
@@ -67,11 +63,10 @@ export const ourFileRouter = {
 
             const pageLevelDocs = await loader.load()
 
-            const pagesAmt = pageLevelDocs.length;
+            // const pagesAmt = pageLevelDocs.length;
 
             // vectorize and index entire document
-            // @ts-ignore
-            const pineconeIndex = pc.Index(process.env.PINECONE_INDEX)
+            const pineconeIndex = pc.Index(process.env.PINECONE_INDEX!)
 
             // const embeddings = new OpenAIEmbeddings({
             //    // openAIApiKey: process.env.OPEN_AI_API_KEY,
