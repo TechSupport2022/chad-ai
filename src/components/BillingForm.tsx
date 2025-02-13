@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic';
+
 import { getUserSubscriptionPlan } from '@/lib/stripe'
 import { useToast } from '@/hooks/use-toast'
 import { trpc } from '@/app/_trpc/client'
