@@ -1,56 +1,12 @@
-"use client"
+import React, { Suspense } from 'react'
+import AuthCallbackContent from './AuthCallback'
 
-export const dynamic = 'force-dynamic';
-
-import React, { useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { trpc } from '../_trpc/client'
-import { Loader2 } from 'lucide-react'
-
-const Page = () => {
-   const router = useRouter()
-
-   const searchParams = useSearchParams()
-
-   const origin = searchParams.get('origin')
-
-   // const { data } = trpc.hello.useQuery({ text: "Hello TRPC!" })
-
-
-   // Call the TRPC query with retry options
-   const { data, error } = trpc.authCallback.useQuery(undefined, {
-      retry: true,
-      retryDelay: 500,
-   });
-
-   useEffect(() => {
-      // Handle successful authentication
-      if (data?.success) {
-         router.push(origin ? `/${origin}` : '/dashboard');
-      }
-
-      // Handle unauthorized access
-      if (error?.data?.code === 'UNAUTHORIZED') {
-         router.push('/sign-in');
-      }
-   }, [data, error, origin, router]);
-
-
+const AuthCallbackPage = () => {
    return (
-      <div className='w-full mt-24 flex justify-center'>
-         <div className='flex flex-col items-center gap-2'>
-            <Loader2 className='h-8 w-8 animate-spin text-zinc-800' />
-            <h3 className='font-semibold text-xl'>
-               Setting up your account...
-            </h3>
-            <p>You will be redirected automatically.</p>
-         </div>
-      </div>
+      <Suspense fallback={<div>Loading...</div>}>
+         <AuthCallbackContent />
+      </Suspense>
    )
-
-
-
-
 }
 
-export default Page
+export default AuthCallbackPage
