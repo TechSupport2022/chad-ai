@@ -7,6 +7,7 @@ import Providers from "@/components/Providers";
 import "react-loading-skeleton/dist/skeleton.css"
 import "simplebar-react/dist/simplebar.min.css"
 import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "./AuthProvider";
 
 
 export const metadata: Metadata = {
@@ -20,17 +21,19 @@ export default function RootLayout({
    children: React.ReactNode;
 }>) {
    return (
-      <html lang="en" className="light">
-         <Providers>
-            <body
-               className={cn('min-h-screen font-sans antialiased grainy')}
-            //   className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-            >
-               <Toaster />
-               <Navbar />
-               {children}
-            </body>
-         </Providers>
-      </html>
+      <AuthProvider>
+         <html lang="en" className="light">
+            <Providers>
+               <body
+                  className={cn('min-h-screen font-sans antialiased grainy')}
+               //   className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+               >
+                  <Toaster />
+                  <Navbar />
+                  {children}
+               </body>
+            </Providers>
+         </html>
+      </AuthProvider>
    );
 }
