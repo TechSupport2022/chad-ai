@@ -21,7 +21,7 @@ const UploadDropzone = () => {
    const [uploadProgress, setUploadProgress] = useState<number>(0)
    const { toast } = useToast()
 
-   const { startUpload } = useUploadThing("PDFUploader")
+   const { startUpload } = useUploadThing("PDFUploader1");
 
    const { mutate: startPolling } = trpc.getFile.useMutation({
       onSuccess: (file) => {
@@ -53,10 +53,18 @@ const UploadDropzone = () => {
 
          const progressInterval = startSimulatedProgressFn()
 
-         // handle file uploading
-         const res = await startUpload(acceptedFile)
+         // IT DID CALL START UPLOAD SIMULATION PROGRESS
+         console.log("STARTING UPLOAD SIMULATION PROGRESS")
 
-         console.log("res-1 here:....", res);
+         // handle file uploading
+         console.log("UPLOADING ACCEPTED FILE: ", acceptedFile)
+
+         ////////////////////////////////////////////////////////////////////////////////////////////////
+         const res = await startUpload(acceptedFile)
+         ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+         console.log("res-111111111111111111111111111111111111111111111111111111111111111 here:....", res);
 
          if (!res) {
             toast({
@@ -66,12 +74,12 @@ const UploadDropzone = () => {
             })
          }
 
-         let key
+         let key!: string
          // Add a guard clause to ensure res is defined
          if (Array.isArray(res) && res.length > 0) {
             const [fileResponse] = res; // Safely destructure here
 
-            key = fileResponse?.key;   
+            key = fileResponse?.key;
 
             if (!key) {
                toast({
@@ -98,7 +106,8 @@ const UploadDropzone = () => {
 
          console.log("This is the key:.........", key);
 
-         // @ts-ignore
+         console.log("Started POLINGGGGGGGGGGGGGG with KEY: ", key)
+
          startPolling({ key })
 
          // setIsUploading(false)
@@ -145,7 +154,7 @@ const UploadDropzone = () => {
                         </div>
                      ) : null}
 
-                     <input {...getInputProps} type="file" id='dropzone-file' className='hidden' />
+                     <input {...getInputProps()} type="file" id='dropzone-file' className='hidden' />
                   </label>
                </div>
             </div>

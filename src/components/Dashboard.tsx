@@ -12,7 +12,6 @@ import { Button } from './ui/button'
 const Dashboard = () => {
    const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<string | null>(null)
    const { data: files, isLoading } = trpc.getUserFiles.useQuery()
-   console.log("Thius is the files:.......", files)
 
 
    const utils = trpc.useContext();

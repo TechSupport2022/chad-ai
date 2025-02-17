@@ -42,6 +42,24 @@ export const appRouter = router({
       return { success: true }
    }),
 
+   getFile: privateProcedure.input(z.object({
+      key: z.string(),
+   })).mutation(async ({ ctx, input }) => {
+      const { authUserId } = ctx
+      console.log("Getting the file...", ctx)
+
+      const file = await db.file.findFirst({
+         where: {
+            key: input.key,
+            userAuthId: authUserId
+         }
+      })
+
+      if (!file) throw new TRPCError({ code: "NOT_FOUND" })
+
+      return file
+   }),
+
    getUserFiles: privateProcedure.query(async ({ ctx }) => {
       const { authUser, authUserId } = ctx
 
@@ -51,7 +69,7 @@ export const appRouter = router({
          }
       })
 
-      console.log("This is the server userfiles:...", userFiles)
+      // console.log("This is the server userfiles:...", userFiles)
 
       return userFiles
    }),
@@ -59,7 +77,7 @@ export const appRouter = router({
    createStripeSession: privateProcedure.mutation(async ({ ctx }) => {
       const { authUserId, authUser } = ctx
 
-      const billingUrl = absoluteUrl("/dashboard/billing")
+      const billingUrl = absoluteUrl("dashboard/billing")
 
       if (!authUserId) throw new TRPCError({ code: "UNAUTHORIZED" })
 
@@ -191,22 +209,7 @@ export const appRouter = router({
       return file
    }),
 
-   getFile: privateProcedure.input(z.object({
-      key: z.string(),
-   })).mutation(async ({ ctx, input }) => {
-      const { authUserId } = ctx
 
-      const file = await db.file.findFirst({
-         where: {
-            key: input.key,
-            userAuthId: authUserId
-         }
-      })
-
-      if (!file) throw new TRPCError({ code: "NOT_FOUND" })
-
-      return file
-   }),
 
    getFileUploadtStatus: privateProcedure
       .input(z.object({ fileId: z.string() }))

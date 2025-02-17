@@ -7,15 +7,17 @@ import { pc } from "@/lib/pinecone";
 import { PineconeStore } from "@langchain/pinecone";
 // import { TransformersEmbeddings } from 'langchain/embeddings/hf';
 import { HuggingFaceInferenceEmbeddings } from '@langchain/community/embeddings/hf';
+import { currentUser } from "@clerk/nextjs/server";
 
 
 
 const f = createUploadthing();
 
+
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
    // Define as many FileRoutes as you like, each with a unique routeSlug
-   PDFUploader: f({
+   PDFUploader1: f({
       pdf: {
          /**
           * For full list of options and defaults, see the File Route API reference
@@ -25,27 +27,29 @@ export const ourFileRouter = {
          maxFileCount: 1,
       },
    })
-      // Set permissions and file types for this FileRoute
-      .middleware(async () => {
+      .middleware(async ({ req }) => {
          // This code runs on your server before upload
-         const { getUser } = getKindeServerSession();
-         const authUser = await getUser()
+         // const { getUser } = getKindeServerSession();
+         // const authUser = await getUser()
 
-         console.log("user from uploadthing log:...", authUser);
+         console.log("🛠️ Running UploadThing Middleware...");
 
-         // If you throw, the authUser will not be able to upload
-         if (!authUser || !authUser.id) throw new UploadThingError("Unauthorized");
+         const authUser = await currentUser().catch(() => null);
+         if (!authUser?.id) {
+            console.error("❌ Unauthorized upload attempt");
+            throw new UploadThingError("UNAUTHORIZED");
+         }
 
-         // Whatever is returned here is accessible in onUploadComplete as `metadata`
+         console.log("✅ User authorized:", authUser.id);
          return { authUserId: authUser.id };
       })
       .onUploadComplete(async ({ metadata, file }) => {
-         // This code RUNS ON YOUR SERVER after upload
-         console.log("Upload complete for userId:", metadata.authUserId);
 
-         console.log("file url", file.url);
+         console.log("✅ UploadThing onUploadComplete triggered.");
+         console.log("Metadata:", metadata);
+         console.log("File URL:", file.url);
 
-         const createdFile = await db.file.create({
+         var createdFile = await db.file.create({
             data: {
                key: file.key,
                name: file.name,
@@ -53,7 +57,11 @@ export const ourFileRouter = {
                url: `https://utfs.io/f/${file.key}`,
                uploadStatus: "PROCESSING"
             }
-         })
+         });
+
+         console.log("✅ File successfully stored in database.");
+
+
 
          try {
             const response = await fetch(`https://utfs.io/f/${file.key}`)
@@ -104,8 +112,9 @@ export const ourFileRouter = {
             })
          }
 
-         // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-         // return { uploadedBy: metadata.userId };
+
+         return { uploadedBy: metadata.authUserId };
+         //// !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       }),
 } satisfies FileRouter;
 

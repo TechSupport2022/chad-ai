@@ -142,7 +142,7 @@ export const POST = async (req: NextRequest) => {
    const answer = parts.length > 1 ? parts[1].trim() : generatedText.trim();
 
    // Optionally log the answer.
-   console.log("Final Answer from ai be like:  ", answer);
+   // console.log("Final Answer from ai be like:  ", answer);
 
    // Store only the answer in the database, instead of the whole response.
    await db.message.create({

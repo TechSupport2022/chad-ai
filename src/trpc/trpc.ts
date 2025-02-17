@@ -15,14 +15,13 @@ const isAuth = middleware(async (opts) => {
    // const authUser = await getUser();
    const authUser = await currentUser()
 
-
    if (!authUser || !authUser.id) {
       throw new TRPCError({ code: "UNAUTHORIZED" })
    }
 
    return opts.next({
       ctx: {
-         authUserId: authUser.id,
+         authUserId: authUser?.id,
          authUser: authUser
       }
    })
