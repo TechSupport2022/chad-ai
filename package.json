@@ -10,6 +10,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.11.3",
     "@hookform/resolvers": "^3.10.0",
     "@huggingface/inference": "^2.8.1",
     "@kinde-oss/kinde-auth-nextjs": "^2.4.6",

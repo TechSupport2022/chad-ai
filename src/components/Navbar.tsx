@@ -23,20 +23,20 @@ const Navbar = () => {
                         size: 'sm', className: 'font-semibold'
                      })}>Pricing</Link>
 
-                     <LoginLink className={buttonVariants({
+                     <Link href={'/sign-in'} className={buttonVariants({
                         variant: 'ghost',
                         size: 'sm', className: 'font-semibold'
                      })}>
                         Sign In
-                     </LoginLink>
+                     </Link>
 
-                     <RegisterLink
+                     <Link href={'/sign-up'}
                         className={buttonVariants({
                            size: 'sm',
                         })}>
                         Get started{' '}
                         <ArrowRight className='ml-1.5 h-5 w-5' />
-                     </RegisterLink>
+                     </Link>
                   </>
                </div>
             </div>

@@ -8,15 +8,17 @@ import { INFINITE_QUERY_LIMIT } from '@/config/infinite-query';
 import { absoluteUrl } from '@/lib/utils';
 import { getUserSubscriptionPlan, stripe } from '@/lib/stripe';
 import { PLANS } from '@/config/stripe';
+import { currentUser } from '@clerk/nextjs/server'
 
 
 export const appRouter = router({
 
    authCallback: procedure.query(async () => {
-      const { getUser } = getKindeServerSession()
-      const authUser = await getUser();
+      const authUser = await currentUser()
+      // const { getUser } = getKindeServerSession()
+      // const authUser = await getUser();
 
-      if (!authUser.id || !authUser.email) {
+      if (!authUser?.id || !authUser) {
          console.log("Please enter a valide credentials");
          throw new TRPCError({ code: "UNAUTHORIZED" })
       }
@@ -33,7 +35,7 @@ export const appRouter = router({
          await db.user.create({
             data: {
                authId: authUser.id,
-               email: authUser.email
+               email: authUser?.emailAddresses[0].emailAddress
             }
          })
       }

@@ -7,7 +7,15 @@ import Providers from "@/components/Providers";
 import "react-loading-skeleton/dist/skeleton.css"
 import "simplebar-react/dist/simplebar.min.css"
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "./AuthProvider";
+// import { AuthProvider } from "./AuthProvider";
+
+import {
+   ClerkProvider,
+   SignInButton,
+   SignedIn,
+   SignedOut,
+   UserButton
+} from '@clerk/nextjs'
 
 
 export const metadata: Metadata = {
@@ -21,19 +29,17 @@ export default function RootLayout({
    children: React.ReactNode;
 }>) {
    return (
-      <AuthProvider>
+      <ClerkProvider>
          <html lang="en" className="light">
             <Providers>
                <body
-                  className={cn('min-h-screen font-sans antialiased grainy')}
-               //   className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-               >
+                  className={cn('min-h-screen font-sans antialiased grainy')}>
                   <Toaster />
                   <Navbar />
                   {children}
                </body>
             </Providers>
          </html>
-      </AuthProvider>
+      </ClerkProvider>
    );
 }
