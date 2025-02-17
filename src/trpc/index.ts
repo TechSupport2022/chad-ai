@@ -11,17 +11,6 @@ import { PLANS } from '@/config/stripe';
 
 
 export const appRouter = router({
-   //   hello: procedure
-   //     .input(
-   //       z.object({
-   //         text: z.string(),
-   //       }),
-   //     )
-   //     .query((opts) => {
-   //       return {
-   //         greeting: `hello ${opts.input.text}`,
-   //       };
-   //     }),
 
    authCallback: procedure.query(async () => {
       const { getUser } = getKindeServerSession()

@@ -33,6 +33,12 @@ const AuthCallbackContent = () => {
       if (error?.data?.code === 'UNAUTHORIZED') {
          router.push('/sign-in');
       }
+
+      // Optionally, handle loading state and prevent infinite redirects
+      if (error && !data) {
+         // Log or handle the error state, maybe show an error message
+         console.error('Authentication failed:', error);
+      }
    }, [data, error, origin, router]);
 
 
