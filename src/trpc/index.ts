@@ -15,8 +15,6 @@ export const appRouter = router({
 
    authCallback: procedure.query(async () => {
       const authUser = await currentUser()
-      // const { getUser } = getKindeServerSession()
-      // const authUser = await getUser();
 
       if (!authUser?.id || !authUser) {
          console.log("Please enter a valide credentials");
