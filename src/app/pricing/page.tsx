@@ -4,14 +4,13 @@ import { buttonVariants } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { PLANS } from '@/config/stripe';
 import { cn } from '@/lib/utils';
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
+import { currentUser } from '@clerk/nextjs/server';
 import { ArrowRight, Check, HelpCircle, Minus } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react'
 
 const page = async () => {
-   const { getUser } = getKindeServerSession()
-   const authUser = await getUser();
+   const authUser = await currentUser();
 
    const pricingItems = [
       {

@@ -15,7 +15,7 @@ interface ChatWrapperProps {
 }
 
 const ChatWrapper = ({ fileId }: ChatWrapperProps) => {
-
+   console.log("THIS IS FILE ID fro 404 CHATWRAPPER: ", fileId)
    const { data, isLoading } = trpc.getFileUploadtStatus.useQuery({ fileId }, {
       retry: true,
       retryDelay: 500,

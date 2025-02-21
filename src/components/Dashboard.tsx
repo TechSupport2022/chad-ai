@@ -18,6 +18,7 @@ const Dashboard = () => {
    const { mutate: deleteFile } = trpc.deleteFile.useMutation({
       onSuccess: () => {
         // Invalidate the query to refresh the file list
+        console.log("File succesfully deleted clientside")
         utils.getUserFiles.invalidate(); // Replace 'fileList' with the query key for your file list
       },
       onError: (error) => {

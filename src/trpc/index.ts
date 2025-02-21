@@ -1,9 +1,7 @@
 import { z } from 'zod';
 import { privateProcedure, procedure, router } from './trpc';
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { TRPCError } from '@trpc/server';
 import { db } from '@/db';
-import { ObjectId } from "mongodb"
 import { INFINITE_QUERY_LIMIT } from '@/config/infinite-query';
 import { absoluteUrl } from '@/lib/utils';
 import { getUserSubscriptionPlan, stripe } from '@/lib/stripe';
@@ -173,12 +171,11 @@ export const appRouter = router({
       }),
 
    tempGetUserFiles: procedure.query(async () => {
-      const { getUser } = getKindeServerSession()
-      const user = await getUser();
+      const authUser = await currentUser();
 
       return await db.file.findMany({
          where: {
-            userAuthId: user.id
+            userAuthId: authUser?.id
          }
       })
    }),
@@ -186,6 +183,7 @@ export const appRouter = router({
    deleteFile: privateProcedure.input(
       z.object({ id: z.string() })
    ).mutation(async ({ ctx, input }) => {
+      console.log("DELETING FILE STARTED SERVSIDE")
       const { authUserId } = ctx
 
       const file = await db.file.findFirst({
@@ -204,18 +202,19 @@ export const appRouter = router({
          }
       })
 
+      console.log("FILE HAS BEEN SUCCESSFULLY DELETED")
       return file
    }),
-
 
 
    getFileUploadtStatus: privateProcedure
       .input(z.object({ fileId: z.string() }))
       .query(async ({ input, ctx }) => {
+         console.log("GET FILE UPLOAD STATUS OPERATION STARTED:..", input);
          const file = await db.file.findFirst({
             where: {
                id: input.fileId,
-               userAuthId: ctx.authUserId,
+               // userAuthId: ctx.authUserId,
             }
          })
 

@@ -1,12 +1,12 @@
 import { db } from "@/db";
 import { pc } from "@/lib/pinecone";
 import { SendMessageValidator } from "@/lib/validators/SendMessageValidators";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { HuggingFaceInferenceEmbeddings } from "@langchain/community/embeddings/hf";
 import { PineconeStore } from "@langchain/pinecone";
 import { NextRequest } from "next/server";
 import { HfInference } from "@huggingface/inference";
 import { generatePrompts } from "@/lib/constants";
+import { currentUser } from "@clerk/nextjs/server";
 
 const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
@@ -15,10 +15,9 @@ export const POST = async (req: NextRequest) => {
 
    const body = await req.json();
 
-   const { getUser } = getKindeServerSession()
-   const authUser = await getUser()
+   const authUser = await currentUser()
 
-   const { id: authUserId } = authUser;
+   const authUserId = authUser?.id;
 
    if (!authUserId) return new Response('UNAUTHORIZED', { status: 401 })
 
