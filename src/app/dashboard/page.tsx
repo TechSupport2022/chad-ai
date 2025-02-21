@@ -8,9 +8,6 @@ import { currentUser } from '@clerk/nextjs/server'
 
 const Page = async () => {
    const authUser = await currentUser()
-   // const { getUser } = getKindeServerSession()
-   // const authUser = await getUser()
-   // console.log("this is the user: ", authUser)
    console.log("this is the user ID: app/dashboard ", authUser?.id)
 
    if (!authUser || !authUser.id) redirect('/auth-callback?origin=dashboard')
