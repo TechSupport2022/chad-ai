@@ -42,10 +42,11 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 
 
 interface PdfRendererProps {
-   url: string
+   url?: string,
+   file_key: string
 }
 
-const PdfRenderer = ({ url }: PdfRendererProps) => {
+const PdfRenderer = ({ file_key }: PdfRendererProps) => {
    const { toast } = useToast()
 
    const [numPages, setNumPages] = useState<number>()
@@ -57,6 +58,7 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
    >(null)
 
    const isLoading = renderedScale !== scale
+   const file_url = `/api/app/api/pdf-proxy/${file_key}`
 
    const CustomPageValidator = z.object({
       page: z.string().refine((num) => {
@@ -187,7 +189,7 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
                   <RotateCw className='h-4 w-4' />
                </Button>
 
-               <PdfFullscreen fileUrl={url} />
+               <PdfFullscreen fileUrl={file_url} />
             </div>
          </div>
 
@@ -213,7 +215,7 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
                      onLoadSuccess={({ numPages }) =>
                         setNumPages(numPages)
                      }
-                     file={url}
+                     file={file_url}
                      className='max-h-full'>
                      {isLoading && renderedScale ? (
                         <Page

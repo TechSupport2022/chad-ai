@@ -47,13 +47,15 @@ export const ourFileRouter = {
          console.log("✅ UploadThing onUploadComplete triggered.");
          console.log("Metadata:", metadata);
          console.log("File URL:", file.url);
+         console.log("✅ FILE WEB HOOK RESPONSE: ", file)
 
          var createdFile = await db.file.create({
             data: {
                key: file.key,
                name: file.name,
                userAuthId: metadata.authUserId,
-               url: `https://utfs.io/f/${file.key}`,
+               // url: `https://utfs.io/f/${file.key}`,
+               url: `https://kylwgfzugf.ufs.sh/f/${file.key}`,
                uploadStatus: "PROCESSING"
             }
          });
@@ -63,7 +65,8 @@ export const ourFileRouter = {
 
 
          try {
-            const response = await fetch(`https://utfs.io/f/${file.key}`)
+            // const response = await fetch(`https://utfs.io/f/${file.key}`)
+            const response = await fetch(`https://kylwgfzugf.ufs.sh/f/${file.key}`)
             const blob = await response.blob()
 
             const loader = new PDFLoader(blob)
