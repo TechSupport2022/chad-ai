@@ -48,7 +48,7 @@ const UploadDropzone = () => {
    }
 
    return (
-      <Dropzone accept={{ 'application/pdf': ['.pdf'] }} multiple={false}  onDrop={async (acceptedFile) => {
+      <Dropzone accept={{ 'application/pdf': ['.pdf'] }} multiple={false} onDrop={async (acceptedFile) => {
          setIsUploading(true)
 
          const progressInterval = startSimulatedProgressFn()
@@ -111,10 +111,10 @@ const UploadDropzone = () => {
          if (key) {
             console.log("Starting polling with key:", key);
             startPolling({ key });
-          } else {
+         } else {
             console.error("Upload failed, no key returned.");
-          }
-          
+         }
+
 
          // setIsUploading(false)
          console.log("This is the dragged and dropped file:.......", acceptedFile)
@@ -160,7 +160,14 @@ const UploadDropzone = () => {
                         </div>
                      ) : null}
 
-                     <input {...getInputProps()} type="file" id='dropzone-file' className='hidden' />
+                     {/* <input {...getInputProps()} type="file" id='dropzone-file' className='hidden' /> */}
+                     <input
+                        {...getInputProps()}
+                        type="file"
+                        id='dropzone-file'
+                        style={{ opacity: 0, position: "absolute", width: "100%", height: "100%" }}
+                     />
+
                   </label>
                </div>
             </div>
