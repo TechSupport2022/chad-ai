@@ -48,7 +48,7 @@ const UploadDropzone = () => {
    }
 
    return (
-      <Dropzone multiple={false} onDrop={async (acceptedFile) => {
+      <Dropzone accept={{ 'application/pdf': ['.pdf'] }} multiple={false}  onDrop={async (acceptedFile) => {
          setIsUploading(true)
 
          const progressInterval = startSimulatedProgressFn()
@@ -60,7 +60,7 @@ const UploadDropzone = () => {
          console.log("UPLOADING ACCEPTED FILE: ", acceptedFile)
 
          ////////////////////////////////////////////////////////////////////////////////////////////////
-         const res = await startUpload(acceptedFile)
+         const res = await startUpload([acceptedFile[0]]);
          ////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -108,7 +108,13 @@ const UploadDropzone = () => {
 
          console.log("Started POLINGGGGGGGGGGGGGG with KEY: ", key)
 
-         startPolling({ key })
+         if (key) {
+            console.log("Starting polling with key:", key);
+            startPolling({ key });
+          } else {
+            console.error("Upload failed, no key returned.");
+          }
+          
 
          // setIsUploading(false)
          console.log("This is the dragged and dropped file:.......", acceptedFile)

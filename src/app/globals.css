@@ -96,3 +96,14 @@
  .scrollbar-thumb-rounded::-webkit-scrollbar-thumb {
    border-radius: 7px;
  }
+ 
+ 
+ 
+ @layer base {
+  * {
+    @apply border-border outline-ring/50;
+   }
+  body {
+    @apply bg-background text-foreground;
+   }
+}

@@ -15,6 +15,9 @@ const nextConfig: NextConfig = {
       // your project has ESLint errors.
       ignoreDuringBuilds: true,
    },
+   images: {
+      domains: ["img.clerk.com"], // Allow Clerk-hosted images
+    },
 };
 
 export default nextConfig;
