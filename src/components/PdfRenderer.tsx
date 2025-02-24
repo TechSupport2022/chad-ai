@@ -59,12 +59,14 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
    const isLoading = renderedScale !== scale
 
    const CustomPageValidator = z.object({
-      page: z
-         .string()
-         .refine(
-            (num) => Number(num) > 0 && Number(num) <= numPages!
-         ),
-   })
+      page: z.string().refine((num) => {
+         if (!numPages) return true; // Skip range check until PDF is loaded
+         const pageNum = Number(num);
+         return pageNum > 0 && pageNum <= numPages;
+      }, {
+         message: `Page number must be between 1 and ${numPages || '?'}`,
+      }),
+   });
 
    type TCustomPageValidator = z.infer<
       typeof CustomPageValidator
@@ -82,7 +84,7 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
       resolver: zodResolver(CustomPageValidator),
    })
 
-   console.log("THIS IS THE ERRORS FOUND IN PDFRENDERER",errors)
+   console.log("THIS IS THE ERRORS FOUND IN PDFRENDERER", errors)
 
    const { width, ref } = useResizeDetector()
 

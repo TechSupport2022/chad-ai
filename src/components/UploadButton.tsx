@@ -187,7 +187,7 @@ const UploadButton = () => {
          }
       }}>
          <DialogTrigger onClick={() => setIsOpen(true)} asChild>
-            <Button>Upload PDF</Button>
+            <Button className='p-7 py-7' size={'lg'}>Upload PDF</Button>
          </DialogTrigger>
 
          <DialogContent>
