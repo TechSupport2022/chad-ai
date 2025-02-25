@@ -59,7 +59,7 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
    >(null)
 
    const isLoading = renderedScale !== scale
-   const file_url = `/api/app/api/pdf-proxy/${file_key}`
+   const file_url = `/api/pdf-proxy/${file_key}`
 
    const CustomPageValidator = z.object({
       page: z.string().refine((num) => {
@@ -101,19 +101,31 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
    useEffect(() => {
       async function fetchPDF() {
          try {
+            console.log("Fetching from:", file_url);
             const response = await fetch(file_url);
+            console.log("Response status:", response.status);
             if (!response.ok) {
-               throw new Error('Error fetching PDF');
+               const text = await response.text();
+               console.error("Error response text:", text);
+               throw new Error('Error fetching PDF: ' + response.status);
             }
             const blob = await response.blob();
             const objectUrl = URL.createObjectURL(blob);
+            console.log("Created blob URL:", objectUrl);
             setBlobUrl(objectUrl);
          } catch (error) {
-            console.error(error);
+            console.error("fetchPDF error:", error);
+            toast({
+               title: "Error",
+               description: "Failed to load PDF.",
+               variant: "destructive"
+            });
          }
       }
       fetchPDF();
    }, [file_url]);
+
+
 
 
    return (

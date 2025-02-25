@@ -1,7 +1,3 @@
-// app/api/pdf-proxy/[fileId]/route.js
-
-// app/api/pdf-proxy/[fileId]/route.ts
-
 import { NextRequest } from 'next/server';
 
 export async function GET(
@@ -20,10 +16,11 @@ export async function GET(
       return new Response('Error fetching file', { status: response.status });
    }
 
-   // Clone and modify the headers to ensure the PDF is rendered inline.
+   // Create new headers overriding the disposition
    const headers = new Headers(response.headers);
    headers.set('Content-Disposition', 'inline; filename="file.pdf"');
    headers.set('Content-Type', 'application/pdf');
+   headers.set('X-Content-Type-Options', 'nosniff');
 
    // Return the modified response.
    return new Response(response.body, {
