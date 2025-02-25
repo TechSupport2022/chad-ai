@@ -59,7 +59,7 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
    >(null)
 
    const isLoading = renderedScale !== scale
-
+   
    const CustomPageValidator = z.object({
       page: z.string().refine((num) => {
          if (!numPages) return true; // Skip range check until PDF is loaded
@@ -77,8 +77,7 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
       handleSubmit,
       formState: { errors },
       setValue,
-   } = useForm<TCustomPageValidator>({
-      defaultValues: {
+   } = useForm<TCustomPageValidator>({ defaultValues: {
          page: '1',
       },
       resolver: zodResolver(CustomPageValidator),
@@ -95,7 +94,7 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
       setValue('page', String(page))
    }
 
-   const file_url = `/api/pdf-proxy/${file_key}?nocache=${Date.now()}`;
+const file_url = `/api/pdf-proxy/${file_key}?mrreal=illustration`;
    useEffect(() => {
       async function fetchPDF() {
          try {
