@@ -9,8 +9,8 @@ export async function GET(
 
    
    // Construct the Uploadthing URL for the PDF file.
-   const fileUrl = `https://utfs.io/f/${fileId}`;
-   // const fileUrl = `https://kylwgfzugf.ufs.sh/f/${fileId}`;
+   // const fileUrl = `https://utfs.io/f/${fileId}`;
+   const fileUrl = `https://kylwgfzugf.ufs.sh/f/${fileId}`;
 
    
    // Fetch the PDF file from Uploadthing.

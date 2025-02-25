@@ -59,7 +59,7 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
    >(null)
 
    const isLoading = renderedScale !== scale
-   
+
    const CustomPageValidator = z.object({
       page: z.string().refine((num) => {
          if (!numPages) return true; // Skip range check until PDF is loaded
@@ -77,7 +77,8 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
       handleSubmit,
       formState: { errors },
       setValue,
-   } = useForm<TCustomPageValidator>({ defaultValues: {
+   } = useForm<TCustomPageValidator>({
+      defaultValues: {
          page: '1',
       },
       resolver: zodResolver(CustomPageValidator),
@@ -94,15 +95,15 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
       setValue('page', String(page))
    }
 
-const file_url = `/api/pdf-proxy/${file_key}?mrreal=illustration`;
+   const file_url = `/api/pdf-proxy/${file_key}?mrreal=illustration`;
    useEffect(() => {
       async function fetchPDF() {
          try {
             console.log("Fetching from:", file_url);
             const response = await fetch(file_url, {
                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-             });
-             
+            });
+
             console.log("Response status:", response.status);
             if (!response.ok) {
                const text = await response.text();
@@ -115,11 +116,14 @@ const file_url = `/api/pdf-proxy/${file_key}?mrreal=illustration`;
             setBlobUrl(objectUrl);
          } catch (error) {
             console.error("fetchPDF error:", error);
-            toast({
-               title: "Error",
-               description: "Failed to load PDF.",
-               variant: "destructive"
-            });
+            if (!blobUrl) {
+               toast({
+                  title: "PDF Not Loading",
+                  description:
+                     "It seems a download manager (like IDM) might be intercepting the file. Please disable it or whitelist this site to view the PDF properly.",
+                  variant: "destructive",
+               });
+            }
          }
       }
       fetchPDF();
