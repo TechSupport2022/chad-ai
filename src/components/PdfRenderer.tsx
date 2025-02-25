@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast"
 import { useResizeDetector } from 'react-resize-detector'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -49,6 +49,7 @@ interface PdfRendererProps {
 const PdfRenderer = ({ file_key }: PdfRendererProps) => {
    const { toast } = useToast()
 
+   const [blobUrl, setBlobUrl] = useState<string | null>(null);
    const [numPages, setNumPages] = useState<number>()
    const [currPage, setCurrPage] = useState<number>(1)
    const [scale, setScale] = useState<number>(1)
@@ -96,6 +97,24 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
       setCurrPage(Number(page))
       setValue('page', String(page))
    }
+
+   useEffect(() => {
+      async function fetchPDF() {
+        try {
+          const response = await fetch(file_url);
+          if (!response.ok) {
+            throw new Error('Error fetching PDF');
+          }
+          const blob = await response.blob();
+          const objectUrl = URL.createObjectURL(blob);
+          setBlobUrl(objectUrl);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+      fetchPDF();
+    }, [file_url]);
+  
 
    return (
       <div className='w-full bg-white rounded-md shadow flex flex-col items-center'>
