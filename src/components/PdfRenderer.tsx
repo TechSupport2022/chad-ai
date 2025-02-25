@@ -59,7 +59,6 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
    >(null)
 
    const isLoading = renderedScale !== scale
-   const file_url = `/api/pdf-proxy/${file_key}`
 
    const CustomPageValidator = z.object({
       page: z.string().refine((num) => {
@@ -71,9 +70,7 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
       }),
    });
 
-   type TCustomPageValidator = z.infer<
-      typeof CustomPageValidator
-   >
+   type TCustomPageValidator = z.infer<typeof CustomPageValidator>
 
    const {
       register,
@@ -98,11 +95,15 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
       setValue('page', String(page))
    }
 
+   const file_url = `/api/pdf-proxy/${file_key}?nocache=${Date.now()}`;
    useEffect(() => {
       async function fetchPDF() {
          try {
             console.log("Fetching from:", file_url);
-            const response = await fetch(file_url);
+            const response = await fetch(file_url, {
+               headers: { 'X-Requested-With': 'XMLHttpRequest' },
+             });
+             
             console.log("Response status:", response.status);
             if (!response.ok) {
                const text = await response.text();
