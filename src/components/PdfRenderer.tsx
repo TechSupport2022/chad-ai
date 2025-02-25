@@ -49,7 +49,7 @@ interface PdfRendererProps {
 const PdfRenderer = ({ file_key }: PdfRendererProps) => {
    const { toast } = useToast()
 
-   const [blobUrl, setBlobUrl] = useState<string | null>(null);
+   const [blobUrl, setBlobUrl] = useState<string>();
    const [numPages, setNumPages] = useState<number>()
    const [currPage, setCurrPage] = useState<number>(1)
    const [scale, setScale] = useState<number>(1)
@@ -100,21 +100,21 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
 
    useEffect(() => {
       async function fetchPDF() {
-        try {
-          const response = await fetch(file_url);
-          if (!response.ok) {
-            throw new Error('Error fetching PDF');
-          }
-          const blob = await response.blob();
-          const objectUrl = URL.createObjectURL(blob);
-          setBlobUrl(objectUrl);
-        } catch (error) {
-          console.error(error);
-        }
+         try {
+            const response = await fetch(file_url);
+            if (!response.ok) {
+               throw new Error('Error fetching PDF');
+            }
+            const blob = await response.blob();
+            const objectUrl = URL.createObjectURL(blob);
+            setBlobUrl(objectUrl);
+         } catch (error) {
+            console.error(error);
+         }
       }
       fetchPDF();
-    }, [file_url]);
-  
+   }, [file_url]);
+
 
    return (
       <div className='w-full bg-white rounded-md shadow flex flex-col items-center'>
@@ -208,7 +208,7 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
                   <RotateCw className='h-4 w-4' />
                </Button>
 
-               <PdfFullscreen fileUrl={file_url} />
+               <PdfFullscreen fileUrl={blobUrl!} />
             </div>
          </div>
 
@@ -234,7 +234,7 @@ const PdfRenderer = ({ file_key }: PdfRendererProps) => {
                      onLoadSuccess={({ numPages }) =>
                         setNumPages(numPages)
                      }
-                     file={file_url}
+                     file={blobUrl}
                      className='max-h-full'>
                      {isLoading && renderedScale ? (
                         <Page
