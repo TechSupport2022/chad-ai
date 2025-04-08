@@ -26,7 +26,7 @@ export const POST = async (req: NextRequest) => {
    const file = await db.file.findFirst({
       where: {
          id: fileId,
-         userAuthId: authUserId
+         userAuthId: authUserId 
       }
    })
 
