@@ -8,6 +8,7 @@ import Skeleton from "react-loading-skeleton"
 import Link from 'next/link'
 import { format } from "date-fns"
 import { Button } from './ui/button'
+import { DemoUploadButton } from './demoUploadButton'
 
 const Dashboard = () => {
    const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<string | null>(null)
