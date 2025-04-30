@@ -40,7 +40,7 @@ const Dashboard = () => {
          <div className='mt-8 flex flex-col items-start justify-between gap-4 border-b border-e-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0'>
             <h1 className='mb-3 font-bold text-5xl'>My Files</h1>
 
-
+            {/* <DemoUploadButton endpoint={'PDFUploader1'}/> */}
             <UploadButton />
          </div>
 
