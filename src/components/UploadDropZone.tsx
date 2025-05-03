@@ -15,18 +15,21 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@clerk/nextjs'
 
 
-const UploadDropzone = () => {
+const UploadDropzone = ({ token }: { token: string}) => {
    const router = useRouter()
-   const { userId, getToken } = useAuth()
+   const { toast } = useToast()
 
    const [isUploading, setIsUploading] = useState<boolean>(false)
    const [uploadProgress, setUploadProgress] = useState<number>(0)
-   const { toast } = useToast()
+
+   // 👇 Get Clerk token
+
+   console.log("CLERK TOKEN:.......", token)
 
    const { startUpload } = useUploadThing("PDFUploader1", {
-      headers: () => ({
-         "x-user-id": userId ?? "",  // Or whatever key you want
-       }),
+      headers: {
+         Authorization: `Bearer ${token}`,
+      },
    });
 
    const { mutate: startPolling } = trpc.getFile.useMutation({
@@ -54,77 +57,81 @@ const UploadDropzone = () => {
    }
 
    return (
-      <Dropzone accept={{ 'application/pdf': ['.pdf'] }} multiple={false} onDrop={async (acceptedFile) => {
-         setIsUploading(true)
+      <Dropzone
+         accept={{ 'application/pdf': ['.pdf'] }}
+         multiple={false}
+         onDrop={async (acceptedFile) => {
+            setIsUploading(true)
 
-         const progressInterval = startSimulatedProgressFn()
+            const progressInterval = startSimulatedProgressFn()
 
-         // IT DID CALL START UPLOAD SIMULATION PROGRESS
-         console.log("STARTING UPLOAD SIMULATION PROGRESS")
+            // IT DID CALL START UPLOAD SIMULATION PROGRESS
+            console.log("STARTING UPLOAD SIMULATION PROGRESS")
 
-         // handle file uploading
-         console.log("UPLOADING ACCEPTED FILE: ", acceptedFile)
-
-         ////////////////////////////////////////////////////////////////////////////////////////////////
-         const res = await startUpload([acceptedFile[0]]);
-         ////////////////////////////////////////////////////////////////////////////////////////////////
+            // handle file uploading
+            console.log("UPLOADING ACCEPTED FILE: ", acceptedFile)
 
 
-         console.log("res-111111111111111111111111111111111111111111111111111111111111111 here:....", res);
+            ////////////////////////////////////////////////////////////////////////////////////////////////
+            const res = await startUpload([acceptedFile[0]]);
+            ////////////////////////////////////////////////////////////////////////////////////////////////
 
-         if (!res) {
-            toast({
-               title: "Something went wrong uploading",
-               description: "Please try again later.",
-               variant: "destructive"
-            })
-         }
 
-         let key!: string
-         // Add a guard clause to ensure res is defined
-         if (Array.isArray(res) && res.length > 0) {
-            const [fileResponse] = res; // Safely destructure here
+            console.log("res-111111111111111111111111111111111111111111111111111111111111111 here:....", res);
 
-            key = fileResponse?.key;
+            if (!res) {
+               toast({
+                  title: "Something went wrong uploading",
+                  description: "Please try again later.",
+                  variant: "destructive"
+               })
+            }
 
-            if (!key) {
+            let key!: string
+            // Add a guard clause to ensure res is defined
+            if (Array.isArray(res) && res.length > 0) {
+               const [fileResponse] = res; // Safely destructure here
+
+               key = fileResponse?.key;
+
+               if (!key) {
+                  toast({
+                     title: "Something went wrong uploading",
+                     description: "Please try again later.",
+                     variant: "destructive"
+                  });
+               } else {
+                  console.log("File key:", key); // Use the key as needed
+               }
+            } else {
                toast({
                   title: "Something went wrong uploading",
                   description: "Please try again later.",
                   variant: "destructive"
                });
-            } else {
-               console.log("File key:", key); // Use the key as needed
+
+               console.log("res here:....", res);
             }
-         } else {
-            toast({
-               title: "Something went wrong uploading",
-               description: "Please try again later.",
-               variant: "destructive"
-            });
-
-            console.log("res here:....", res);
-         }
 
 
-         clearInterval(progressInterval)
-         setUploadProgress(100)
+            clearInterval(progressInterval)
+            setUploadProgress(100)
 
-         console.log("This is the key:.........", key);
+            console.log("This is the key:.........", key);
 
-         console.log("Started POLINGGGGGGGGGGGGGG with KEY: ", key)
+            console.log("Started POLINGGGGGGGGGGGGGG with KEY: ", key)
 
-         if (key) {
-            console.log("Starting polling with key:", key);
-            startPolling({ key });
-         } else {
-            console.error("Upload failed, no key returned.");
-         }
+            if (key) {
+               console.log("Starting polling with key:", key);
+               startPolling({ key });
+            } else {
+               console.error("Upload failed, no key returned.");
+            }
 
 
-         // setIsUploading(false)
-         console.log("This is the dragged and dropped file:.......", acceptedFile)
-      }}>
+            // setIsUploading(false)
+            console.log("This is the dragged and dropped file:.......", acceptedFile)
+         }}>
          {({ getRootProps, getInputProps, acceptedFiles }) => (
             <div {...getRootProps()} className='border h-64 border-dashed border-gray-300 rounded-lg'>
                <div className='flex items-center justify-center h-full w-full'>
@@ -182,27 +189,4 @@ const UploadDropzone = () => {
    )
 }
 
-const UploadButton = () => {
-   const [isOpen, setIsOpen] = useState<boolean>(false)
-
-
-   return (
-      <Dialog open={isOpen} onOpenChange={(v) => {
-         if (!v) {
-            setIsOpen(v)
-         }
-      }}>
-         <DialogTrigger onClick={() => setIsOpen(true)} asChild>
-            <Button className='p-7 py-7' size={'lg'}>Upload PDF</Button>
-         </DialogTrigger>
-
-         <DialogContent>
-            <DialogTitle>Hello</DialogTitle>
-            <UploadDropzone />
-         </DialogContent>
-
-      </Dialog>
-   )
-}
-
-export default UploadButton
+export default UploadDropzone

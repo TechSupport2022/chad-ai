@@ -19,14 +19,11 @@ const ChatWrapper = ({ fileId }: ChatWrapperProps) => {
    const { data, isLoading } = trpc.getFileUploadtStatus.useQuery({ fileId }, {
       retry: true,
       retryDelay: 500,
-      refetchInterval: (queryData) => {
-         //@ts-ignore
-         return queryData?.status === "SUCCESS" ||
-            //@ts-ignore
-            queryData?.status === "FAILED" ?
-            false : 500;
-      }
-   })
+      refetchInterval: (query) => {
+        const status = query.state.data?.status;
+        return status === "SUCCESS" || status === "FAILED" ? false : 500;
+      },
+    })
 
    if (isLoading) {
       return <div className='relative min-h-full bg-zinc-50 flex divide-y divide-zinc-200 flex-col justify-between gap-2'>

@@ -8,6 +8,7 @@ import { useMutation } from '@tanstack/react-query'
 import { trpc } from '@/app/_trpc/client'
 import { INFINITE_QUERY_LIMIT } from '@/config/infinite-query'
 import { useToast } from '@/hooks/use-toast'
+import { useAuth } from '@clerk/nextjs'
 
 type StreamResponse = {
    addMessage: () => void
@@ -40,16 +41,22 @@ export const ChatContextProvider = ({
    const utils = trpc.useUtils()
 
    const { toast } = useToast()
+   const { userId } = useAuth()
 
    const backupMessage = useRef('')
 
    const { mutate: sendMessage } = useMutation({
       mutationFn: async ({ message }: { message: string }) => {
-         const response = await fetch('/api/message', {
+         // const response = await fetch('api/message', {
+         const response = await fetch('https://d32c-197-211-57-19.ngrok-free.app/api/message', {
             method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
                fileId,
                message,
+               userId
             }),
          })
 
